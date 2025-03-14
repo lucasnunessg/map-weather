@@ -1,10 +1,12 @@
 package map_weather.project.controller;
 
+import org.springframework.http.MediaType;
 import map_weather.project.service.NominatiumService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -28,10 +30,10 @@ public class NominatiumController {
         .onErrorResume(e -> Mono.just("Erro ao buscar coordenadas: " + e.getMessage()));
   }
 
-  @GetMapping("/travels")
-  public Mono<String> buscarCityWithStop(@RequestParam String origem, @RequestParam String parada, @RequestParam String destino){
+  @GetMapping(value = "/travels", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<String> buscarCityWithStop(@RequestParam String origem, @RequestParam String parada, @RequestParam String destino){
     return nominatiumService.buscar3Coordenadas(origem, parada, destino)
-        .onErrorResume(e -> Mono.just("Erro ao buscar coordenadas: " + e.getMessage()));
+        .onErrorResume(e -> Flux.just("Erro ao buscar coordenadas: " + e.getMessage()));
   }
 
 }
