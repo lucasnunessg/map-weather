@@ -1,6 +1,7 @@
 package map_weather.project.service;
 
 import java.time.Duration;
+import map_weather.project.controller.dto.ResponseRoutes;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -39,23 +40,18 @@ public class NominatiumService {
     });
   }
 
-  public Flux<String> buscar3Coordenadas(String origem, String parada, String destino) {
+  public Flux<ResponseRoutes> buscar3Coordenadas(String origem, String parada, String destino) {
     Mono<String> monoOrigem = buscarCoordenadas(origem);
     Mono<String> monoParada = buscarCoordenadas(parada);
     Mono<String> monoDestino = buscarCoordenadas(destino);
 
-    Mono<String> primeraParada = Mono.zip(monoOrigem, monoParada)
-        .map(tuple -> {
-          String respostaOrigem = tuple.getT1();
-          String respostaParada = tuple.getT2();
-          return "data: Origem: " + respostaOrigem + "\nParada: " + respostaParada + "\n\n"; //pra acompanhhar o fluxo streaming
-        });
+    Mono<ResponseRoutes> primeraParada = Mono.zip(monoOrigem, monoParada)
+        .map(tuple -> new ResponseRoutes(tuple.getT1(), tuple.getT2(), null));
 
-    Mono<String> segundaParada = monoDestino.delayElement(Duration.ofSeconds(5))
-        .map(respostaDestino -> "data: Destino: " + respostaDestino + "\n\n");
-    return Flux.interval(Duration.ZERO, Duration.ofSeconds(5)) // Emite a cada 5 segundos
-        .zipWith(Flux.concat(primeraParada, segundaParada)) //combina as 2 respostas + o intervalo
-        .map(tuple -> tuple.getT2()); // traz somente ate a parada
+    Mono<ResponseRoutes> segundaParada = monoDestino.delayElement(Duration.ofSeconds(5))
+        .map(respostaDestino -> new ResponseRoutes(null, null, respostaDestino));
+    return Flux.concat(primeraParada, segundaParada);
+
   }
 
 
