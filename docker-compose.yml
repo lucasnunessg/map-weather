@@ -19,6 +19,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # Configura a URL do Kafka
       KAFKA_BROKER_ID: 1  # Identifica o broker (servidor Kafka)
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  # Fator de replicação dos offsets
+
     depends_on:
       - zookeeper  # Garante que o Zookeeper suba antes do Kafka
 
