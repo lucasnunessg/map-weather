@@ -1,35 +1,38 @@
-version: '3.8'  # Define a versão do Docker Compose
+version: "3"
 
 services:
-  zookeeper:  # Serviço para gerenciar o Kafka
-    image: confluentinc/cp-zookeeper:latest  # Imagem do Zookeeper
-    container_name: zookeeper  # Nome do container
-    restart: always  # Sempre reiniciar se cair
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181  # Porta usada pelo Zookeeper
-
-  kafka:  # Serviço principal do Apache Kafka
-    image: confluentinc/cp-kafka:latest  # Imagem do Kafka
-    container_name: kafka  # Nome do container Kafka
-    restart: always  # Sempre reiniciar se cair
+  kafka:
+    image: bitnami/kafka:latest
+    restart: on-failure
     ports:
-      - "9092:9092"  # Mapeia a porta do Kafka no host
+      - 9092:9092
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # Conecta ao Zookeeper
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # Configura a URL do Kafka
-      KAFKA_BROKER_ID: 1  # Identifica o broker (servidor Kafka)
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  # Fator de replicação dos offsets
-
+      - KAFKA_CFG_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_NUM_PARTITIONS=3
+      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
-      - zookeeper  # Garante que o Zookeeper suba antes do Kafka
+      - zookeeper
 
-  kafdrop:  # Interface gráfica para visualizar os tópicos Kafka
-    image: obsidiandynamics/kafdrop:latest  # Imagem do Kafdrop
-    container_name: kafdrop  # Nome do container
-    restart: always  # Sempre reiniciar se cair
+  zookeeper:
+    image: bitnami/zookeeper:latest
     ports:
-      - "9000:9000"  # Interface web acessível em localhost:9000
+      - 2181:2181
     environment:
-      KAFKA_BROKERCONNECT: kafka:9092  # Conecta ao Kafka
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
     depends_on:
-      - kafka  # Só inicia o Kafdrop depois que o Kafka estiver rodando
+      - kafka
+      - zookeeper
+    ports:
+      - "8081:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=map-weather
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=project-kafka-1:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
