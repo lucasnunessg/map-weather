@@ -18,4 +18,10 @@ public class RouteProducerService {
     System.out.println("Event send: " + message);
   }
 
+  public void sendTwoRoutes(String origem, String destino) {
+    kafkaTemplate.send("map_wheater_route_origem", origem );
+    kafkaTemplate.send("map_weather_route_destino", destino);
+    System.out.println("Event sent to route: " + origem + destino);
+  }
+
 }

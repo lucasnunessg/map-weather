@@ -57,6 +57,22 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
     }
   }
 
+  @PostMapping("/send-two/routes")
+  public ResponseEntity<String> sendTwoRoutes(@RequestParam String origem, @RequestParam String destino) {
+    if (origem.isEmpty() || destino.isEmpty()) {
+      return ResponseEntity.badRequest().body("Erro: Origem e destino não podem estar vazios.");
+    }
+
+    try {
+      routeProducerService.sendTwoRoutes(origem, destino);
+      String rotasOk = String.format("Rotas enviadas com sucesso! Origem: %s | Destino: %s", origem, destino);
+      return ResponseEntity.ok(rotasOk);
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Erro ao enviar rotas: " + e.getMessage());
+    }
+  }
+
+  }
 
 
-}

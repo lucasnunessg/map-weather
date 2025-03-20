@@ -6,9 +6,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RouteConsumer {
 
-  @KafkaListener(topics = "routes-topic", groupId = "my-group")
-  public void consumeRoute(String message) {
-    System.out.println("Recebendo a rota: " + message);
+  @KafkaListener(topics = {"routes-topic", "weather-topic", "traffic-topic"}, groupId = "my-group")
+  public void consumeMultipleTopics(String message) {
+    System.out.println("Mensagem recebida: " + message);
   }
+
+
 
 }

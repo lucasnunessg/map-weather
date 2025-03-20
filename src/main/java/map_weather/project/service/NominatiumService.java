@@ -11,9 +11,11 @@ import reactor.core.publisher.Mono;
 public class NominatiumService {
 
   private final WebClient webClient;
+  private final RouteProducerService routeProducerService;
 
-  public NominatiumService(WebClient.Builder webClientBuilder) {
+  public NominatiumService(WebClient.Builder webClientBuilder, RouteProducerService routeProducerService) {
     this.webClient = webClientBuilder.baseUrl("https://nominatim.openstreetmap.org").build();
+    this.routeProducerService = routeProducerService;
   }
 
  public Mono<String> buscarCoordenadas(String endereco) {
