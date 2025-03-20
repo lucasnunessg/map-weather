@@ -2,6 +2,7 @@ package map_weather.project.controller;
 
 import map_weather.project.controller.dto.ResponseRoutes;
 import map_weather.project.service.RouteProducerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import map_weather.project.service.NominatiumService;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/rotas")
 public class NominatiumController {
 
+  @Autowired
   private final NominatiumService nominatiumService;
   private final RouteProducerService routeProducerService;
 
@@ -57,22 +59,11 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
     }
   }
 
-  @PostMapping("/send-two/routes")
-  public ResponseEntity<String> sendTwoRoutes(@RequestParam String origem, @RequestParam String destino) {
-    if (origem.isEmpty() || destino.isEmpty()) {
-      return ResponseEntity.badRequest().body("Erro: Origem e destino não podem estar vazios.");
-    }
-
-    try {
-      routeProducerService.sendTwoRoutes(origem, destino);
-      String rotasOk = String.format("Rotas enviadas com sucesso! Origem: %s | Destino: %s", origem, destino);
-      return ResponseEntity.ok(rotasOk);
-    } catch (RuntimeException e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Erro ao enviar rotas: " + e.getMessage());
-    }
+  @PostMapping("/send-route")
+  public String sendTwoRoute(@RequestParam String route) {
+    String response = routeProducerService.sendTwoRoutes(route);
+    return "Route sent to Kafka: " + response;
   }
-
   }
 
 
