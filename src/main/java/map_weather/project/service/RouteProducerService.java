@@ -1,5 +1,7 @@
 package map_weather.project.service;
 
+import map_weather.project.controller.dto.ResponseRoutes;
+import org.apache.kafka.common.protocol.types.Field.Str;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -19,7 +21,7 @@ public class RouteProducerService {
   }
 
   public void sendRoute(String message) {
-    kafkaTemplate.send("Route-topic", message);
+    kafkaTemplate.send("routes-topic", message);
     System.out.println("Event send: " + message);
   }
 
@@ -37,9 +39,19 @@ public class RouteProducerService {
 
   }
 
-  public String foundTwoRoutes(String route) {
+  public Mono<String> foundTwoRoutes(String origem, String destino) {
+    Mono<String> foundOrigem = foundRoute(origem);
+    Mono<String> foundDestino = foundRoute(destino);
 
+    return Mono.zip(foundOrigem, foundDestino)
+        .map(tuple -> "Origem: " + tuple.getT1() + " | Destino: " + tuple.getT2())
+        .flatMap(combinedMessage -> {
+          System.out.println("Enviando mensagem ao Kafka: " + combinedMessage);
+          return Mono.fromFuture(kafkaTemplate.send("routes-topic", combinedMessage).toCompletableFuture());
+        })
+        .thenReturn("Mensagem enviada ao Kafka");
   }
+
 
 
 

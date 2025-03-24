@@ -60,9 +60,9 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
   }
 
   @PostMapping("/send-route")
-  public String sendTwoRoute(@RequestParam String route) {
-    String response = routeProducerService.sendTwoRoutes(route);
-    return "Route sent to Kafka: " + response;
+  public Mono<String> sendTwoRoute(@RequestParam String origem, @RequestParam String destino) {
+    return routeProducerService.foundTwoRoutes(origem, destino);
+
   }
   }
 
