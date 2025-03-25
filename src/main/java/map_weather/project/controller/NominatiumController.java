@@ -64,6 +64,11 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
     return routeProducerService.foundTwoRoutes(origem, destino);
 
   }
+
+  @PostMapping("/send-three-routes")
+  public Mono<String> sendThreeRoutes(@RequestParam String origem, @RequestParam String parada, String destino) {
+    return routeProducerService.foundThreeRoutes(origem, parada, destino);
+  }
   }
 
 

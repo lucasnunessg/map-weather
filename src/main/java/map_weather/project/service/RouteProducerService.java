@@ -13,9 +13,10 @@ import reactor.core.publisher.Mono;
 public class RouteProducerService {
 
   private final KafkaTemplate<String, String> kafkaTemplate;
-    private final WebClient webClient;
+  private final WebClient webClient;
 
-  public RouteProducerService(KafkaTemplate<String, String> kafkaTemplate, WebClient.Builder webClientBuilder) {
+  public RouteProducerService(KafkaTemplate<String, String> kafkaTemplate,
+      WebClient.Builder webClientBuilder) {
     this.kafkaTemplate = kafkaTemplate;
     this.webClient = webClientBuilder.baseUrl("https://nominatim.openstreetmap.org").build();
   }
@@ -47,12 +48,42 @@ public class RouteProducerService {
         .map(tuple -> "Origem: " + tuple.getT1() + " | Destino: " + tuple.getT2())
         .flatMap(combinedMessage -> {
           System.out.println("Enviando mensagem ao Kafka: " + combinedMessage);
-          return Mono.fromFuture(kafkaTemplate.send("routes-topic", combinedMessage).toCompletableFuture());
+          return Mono.fromFuture(
+              kafkaTemplate.send("routes-topic", combinedMessage).toCompletableFuture());
         })
         .thenReturn("Mensagem enviada ao Kafka");
   }
 
+  public Mono<String> foundThreeRoutes(String origem, String parada, String destino) {
+    Mono<String> foundOrigem = foundRoute(origem);
+    Mono<String> foundParada = foundRoute(parada);
+    Mono<String> foundDestino = foundRoute(destino);
+
+    return Mono.zip(foundOrigem, foundParada, foundDestino)
+        .map(tuple -> "Origem: " + tuple.getT1() + "| Parada: " + tuple.getT2() + "| Destino: "
+            + tuple.getT3())
+        .flatMap(combinedMessage -> {
+          System.out.println("enviando as rotas ao kafka" + combinedMessage);
+          return Mono.fromFuture(
+              kafkaTemplate.send("routes-topic", combinedMessage).toCompletableFuture());
+        })
+        .thenReturn("Mensagem enviada");
+  }
+
+  public Mono<String> foundThreeRoutesWithoutMap(String origem, String parada, String destino) {
+    Mono<String> foundOrigem = foundRoute(origem);
+    Mono<String> foundParada = foundRoute(parada);
+    Mono<String> foundDestino = foundRoute(destino);
+
+    return Mono.zip(foundOrigem, foundParada, foundDestino)
+        .flatMap(tuple -> {
+          String combinedMessage = "Origem: " + tuple.getT1() + "Parada: " + tuple.getT2() +  "  | Destino: " + tuple.getT3();
+          kafkaTemplate.send("routes-topic", combinedMessage);
+          System.out.println("Mensagem enviada ao kafka");
+          return Mono.empty();
+        });
 
 
+  }
 
 }
