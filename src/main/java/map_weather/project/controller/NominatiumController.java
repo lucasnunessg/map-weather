@@ -59,16 +59,18 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
     }
   }
 
-  @PostMapping("/send-route")
-  public Mono<String> sendTwoRoute(@RequestParam String origem, @RequestParam String destino) {
-    return routeProducerService.foundTwoRoutes(origem, destino);
+  @GetMapping("/send-route")
+  public Mono<String> sendTwoRoute(@RequestParam double lat1, @RequestParam double lon1, @RequestParam double lat2, @RequestParam double lon2) {
+    return routeProducerService.getRouteBetweenPoints(lat1, lon1, lat2, lon2);
 
   }
 
-  @PostMapping("/send-three-routes")
-  public Mono<String> sendThreeRoutes(@RequestParam String origem, @RequestParam String parada, String destino) {
-    return routeProducerService.foundThreeRoutesWithoutMap(origem, parada, destino);
+  @GetMapping("/routes-by-cityname")
+  public Mono<String> getByGraphHoppers(@RequestParam String origem, @RequestParam String destino) {
+    return routeProducerService.getRouteByCities(origem, destino);
   }
+
+
   }
 
 
