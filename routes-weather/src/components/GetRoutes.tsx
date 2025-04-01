@@ -14,7 +14,11 @@ export function GetRoutes(){
 
     socket.onerror = (error) => console.error("Erro no socket", error);
 
-    return () => socket.close();
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
   }, [])
   
 
