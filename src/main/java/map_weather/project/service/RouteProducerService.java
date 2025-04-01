@@ -79,8 +79,7 @@ public class RouteProducerService {
         .flatMap(tuple -> {
           String combinedMessage = "Origem: " + tuple.getT1() + "Parada: " + tuple.getT2() +  "  | Destino: " + tuple.getT3();
           kafkaTemplate.send("routes-topic", combinedMessage);
-          System.out.println("Mensagem enviada ao kafka");
-          return Mono.empty();
+          return Mono.just("Rota enviada: " + combinedMessage);
         });
 
 
