@@ -1,5 +1,6 @@
 package map_weather.project.service;
 
+import map_weather.project.controller.dto.CoordinatesDto;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.stereotype.Service;
@@ -49,12 +50,12 @@ public class RouteProducerService {
     return graphhopperWebClient.get()
         .uri(uriBuilder -> uriBuilder
             .path("/geocode")
-            .queryParam("q", cityName)  // Aqui você só precisa de uma chave "q" por vez, então pode passar a origem
-            .queryParam("locale", "de")  // Defina o local, como no seu exemplo da URL
-            .queryParam("key", GRAPHHOPPER_API_KEY)  // Adicione a chave da API
+            .queryParam("q", cityName)  // Aqui so pd 1 query por vez por limitacao da api
+            .queryParam("locale", "pt")
+            .queryParam("key", GRAPHHOPPER_API_KEY)
             .build())
         .retrieve()
-        .bodyToMono(String.class);  // Recebe o corpo da resposta como String
+        .bodyToMono(String.class);
   }
 
   public Mono<String> getRouteByCities(String origem, String destino) {
@@ -63,10 +64,14 @@ public class RouteProducerService {
 
     return Mono.zip(cityOrigem, cityDestino, (origemRes, destinoRes) -> {
       System.out.println("Origem: " + origemRes);
-      System.out.println("Destino: " + destinoRes);;
+      System.out.println("Destino: " + destinoRes);
       return "Rota gerada com sucesso!" + "Origem: " + origemRes + "Destino: " + destinoRes;
 
     });
+  }
+
+  public List<CoordinatesDto> getLatAndLon(String lat, String lon) {
+    Mono<String> getLatitude = getRouteByCityName()
   }
 
 
