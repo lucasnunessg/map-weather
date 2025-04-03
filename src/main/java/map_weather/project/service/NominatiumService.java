@@ -27,6 +27,7 @@ public class NominatiumService {
             .queryParam("q", endereco)
             .queryParam("format", "json")
             .queryParam("limit", 1)
+            .queryParam("country", "BR")
             .build())
         .retrieve()
         .bodyToMono(String.class);

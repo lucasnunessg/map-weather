@@ -83,14 +83,14 @@ public class RouteProducerService {
         JsonNode rootNode = objectMapper.readTree(response);
 
         JsonNode hits = rootNode.path("hits");
-        if (hits.isArray()) {
-          for (JsonNode hit : hits) {
-            JsonNode point = hit.path("point");
-            if (!point.isMissingNode()) {
-              String lat = String.valueOf(point.path("lat").asDouble());
-              String lon = String.valueOf(point.path("lng").asDouble());
-              coordinatesList.add(new CoordinatesDto(lat, lon));
-            }
+        if (hits.isArray() && hits.size() > 0) {
+          JsonNode firstHit = hits.get(0);
+          JsonNode point = firstHit.path("point");
+
+          if (!point.isMissingNode()) {
+            String lat = String.valueOf(point.path("lat").asDouble());
+            String lon = String.valueOf(point.path("lng").asDouble());
+            coordinatesList.add(new CoordinatesDto(lat, lon));
           }
         }
       } catch (Exception e) {
@@ -98,11 +98,13 @@ public class RouteProducerService {
       }
       return coordinatesList;
     }).block();
-
   }
 
+public Mono<String> getRoutesBetweenCities(String origem, String destino) {
+    List<CoordinatesDto> getOrigem = getLatAndLon(origem);
+    List<CoordinatesDto> getDestino = getLatAndLon(destino);
 
-
-
+    Mono.just()
+}
 
 }
