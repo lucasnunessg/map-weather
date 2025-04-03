@@ -1,5 +1,6 @@
 package map_weather.project.controller;
 
+import map_weather.project.controller.dto.CoordinatesDto;
 import map_weather.project.controller.dto.ResponseRoutes;
 import map_weather.project.service.RouteProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import java.util.List;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -71,6 +73,11 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
   }
 
 
+  @GetMapping("/lat-and-lon")
+  public List<CoordinatesDto> getLatLon(@RequestParam String cityName) {
+    return routeProducerService.getLatAndLon(cityName);
+
+  }
   }
 
 

@@ -1,5 +1,8 @@
 package map_weather.project.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import map_weather.project.controller.dto.CoordinatesDto;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -70,8 +73,32 @@ public class RouteProducerService {
     });
   }
 
-  public List<CoordinatesDto> getLatAndLon(String lat, String lon) {
-    Mono<String> getLatitude = getRouteByCityName()
+  public List<CoordinatesDto> getLatAndLon(String cidade) {
+    Mono<String> responseMono = getRouteByCityName(cidade);
+
+    return responseMono.map(response -> {
+      List<CoordinatesDto> coordinatesList = new ArrayList<>();
+      try {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(response);
+
+        JsonNode hits = rootNode.path("hits");
+        if (hits.isArray()) {
+          for (JsonNode hit : hits) {
+            JsonNode point = hit.path("point");
+            if (!point.isMissingNode()) {
+              String lat = String.valueOf(point.path("lat").asDouble());
+              String lon = String.valueOf(point.path("lng").asDouble());
+              coordinatesList.add(new CoordinatesDto(lat, lon));
+            }
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return coordinatesList;
+    }).block();
+
   }
 
 
