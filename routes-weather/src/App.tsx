@@ -1,6 +1,6 @@
 
 import './App.css'
-import { GetRoutes } from './components/GetRoutes'
+import  GetRoutes from './components/GetRoutes'
 
 function App() {
 

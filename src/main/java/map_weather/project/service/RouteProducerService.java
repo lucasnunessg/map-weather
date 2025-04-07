@@ -111,6 +111,10 @@ public class RouteProducerService {
       throw new RuntimeException("Ponto de destino não encontrado");
     }
 
+    if(getOrigem == getDestino) {
+      throw new RuntimeException("Não pode ser o mesmo destino");
+    }
+
     CoordinatesDto origemCoord = getOrigem.get(0);
     CoordinatesDto destinoCoord = getDestino.get(0);
 
