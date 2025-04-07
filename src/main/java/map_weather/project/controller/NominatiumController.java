@@ -77,7 +77,16 @@ return nominatiumService.buscar2Coordenadas(origem, destino)
   public List<CoordinatesDto> getLatLon(@RequestParam String cityName) {
     return routeProducerService.getLatAndLon(cityName);
 
+
+
   }
+
+  @GetMapping("/two-routes")
+  public List<CoordinatesDto> twoRoutes(@RequestParam String cityNameOrigem, @RequestParam String cityNameDestino) {
+    return routeProducerService.getRoutesBetweenCities(cityNameOrigem, cityNameDestino);
+
+
+}
   }
 
 

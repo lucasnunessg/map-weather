@@ -100,11 +100,46 @@ public class RouteProducerService {
     }).block();
   }
 
-public Mono<String> getRoutesBetweenCities(String origem, String destino) {
+  public List<CoordinatesDto> getRoutesBetweenCities(String origem, String destino) {
     List<CoordinatesDto> getOrigem = getLatAndLon(origem);
     List<CoordinatesDto> getDestino = getLatAndLon(destino);
 
-    Mono.just()
-}
+    if (getOrigem.isEmpty()) {
+      throw new RuntimeException("Ponto de origem não encontrado");
+    }
+    if (getDestino.isEmpty()) {
+      throw new RuntimeException("Ponto de destino não encontrado");
+    }
+
+    CoordinatesDto origemCoord = getOrigem.get(0);
+    CoordinatesDto destinoCoord = getDestino.get(0);
+
+    double lat1 = Double.parseDouble(origemCoord.latitude());
+    double lon1 = Double.parseDouble(origemCoord.longitude());
+    double lat2 = Double.parseDouble(destinoCoord.latitude());
+    double lon2 = Double.parseDouble(destinoCoord.longitude());
+
+    String rotaJson = getRouteBetweenPoints(lat1, lon1, lat2, lon2).block();
+
+    List<CoordinatesDto> routeCoordinates = new ArrayList<>();
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode root = objectMapper.readTree(rotaJson);
+      JsonNode points = root.path("paths").get(0).path("points").path("coordinates");
+
+      for (JsonNode coord : points) {
+        double longitude = coord.get(0).asDouble();
+        double latitude = coord.get(1).asDouble();
+        routeCoordinates.add(new CoordinatesDto(String.valueOf(latitude), String.valueOf(longitude)));
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return routeCoordinates;
+  }
+
+
 
 }
