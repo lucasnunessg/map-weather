@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "./Fetch";
 
 export default function MapWithRoute(){
@@ -7,17 +7,13 @@ export default function MapWithRoute(){
   const [origem, setOrigem] = useState("");
   const [destino, setDestino] = useState("");
   const [error, setError] = useState("");
-  const [coords, setCoords] = useState<Coord[]>([]);
+  const [coords, setCoords] = useState(null);
   
-  type Coord = {
-    latitude: string;
-    longitude: string;
-  }
 
-  useEffect(() => {
+ 
     const fetchData = async () => {
       try {
-       const response = await api.get<Coord[]>(`/rotas/two-routes`,
+       const response = await api.get(`/rotas/two-routes`,
           {
             params: {
               cityNameOrigem: origem,
@@ -33,13 +29,33 @@ export default function MapWithRoute(){
         setError("Não foi possível achar a rota.")
       }
 
-      fetchData();
     }
-  }, [origem, destino])
 
 return(
   <div>
     {error && <p>{error}</p>}
+    <input
+    type="text"
+    placeholder="de onde você vai sair"
+    value={origem}
+    onChange={(e) => setOrigem(e.target.value)}>
+
+    </input>
+
+    <input
+    type="text"
+    placeholder="destino"
+    value={destino}
+    onChange={(e) => setDestino(e.target.value)}>
+
+    </input>
+
+    <button onClick={fetchData}>Enviar</button>
+
+    {coords && (
+      <p>{JSON.stringify(coords, null, 2)}</p>
+        
+    )}
   </div>
 )
   

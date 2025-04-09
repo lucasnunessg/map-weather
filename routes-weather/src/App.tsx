@@ -1,12 +1,12 @@
 
 import './App.css'
-import  GetRoutes from './components/GetRoutes'
+import MapWithRoute from './components/MapWithRoute'
 
 function App() {
 
   return (
     <>
-  <GetRoutes />
+  <MapWithRoute />
     </>
   )
 }
