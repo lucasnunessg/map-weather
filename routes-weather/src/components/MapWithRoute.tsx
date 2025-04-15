@@ -15,18 +15,23 @@ export default function MapWithRoute() {
   type RouteData = {
     latitude: string;
     longitude: string;
-  };
 
-  useEffect(() => {
-    if (!mapRef.current) {
-      mapRef.current = L.map("map").setView([-15.78, -47.93], 5); 
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(mapRef.current);
-    }
-  }, []);
+    
+  };
+  
+
+ useEffect(() => {
+  if(!mapRef.current) {
+   mapRef.current = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://title.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom: 19,
+      attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OenStretMap</a>'
+    }).addTo(mapRef.current)
+  }
+ }, [])
+
+
 
   useEffect(() => {
     if (coords && mapRef.current) {
@@ -60,6 +65,8 @@ export default function MapWithRoute() {
         }));
 
         setCoords(transformedCoordinates); 
+        console.log(response);
+        
         setError(""); 
       }
     } catch (e) {
