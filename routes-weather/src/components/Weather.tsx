@@ -1,27 +1,53 @@
 import { useState } from "react";
 import api from "./Fetch";
 
-export async function Weather(){
+interface Weather {
+  dt: number;
+  temp: number;
+}
 
-
-
-const [weather, setWeather] = useState(null);
-const [city, setCity] = useState("");
-
+export function Weather() {
+  const [weather, setWeather] = useState<null|Weather>(null);
+  const [cityName, setCityName] = useState("");
+  const [error, setError] = useState("");
 
   const fetchData = async () => {
     try {
-      
       const response = await api.get("previsao-tempo/previsao-cidade", {
-        city
-      })
-
-    }catch(e){
-      console.error(e)
+        params: { cityName }
+      });
+      if (response.status === 200) {
+        console.log("response here: " + response)
+        setWeather(response.data);
+        setError(""); 
+      }
+    } catch (e) {
+      console.error(e);
+      setError("Não foi possível encontrar a cidade. Tente novamente.");
     }
-  }
+  };
 
-  return(
-    <></>
-  )
+  return (
+    <>
+      {error && <p>{error}</p>}
+
+      <input
+        type="text"
+        placeholder="Digite a cidade"
+        value={cityName}
+        onChange={(e) => setCityName(e.target.value)}
+      />
+
+      <button onClick={fetchData}>Enviar</button>
+
+      {weather && (
+  <div>
+    <h2>Previsão para {weather.dt}</h2>
+    <p>Temperatura: {weather.temp}</p>
+  </div>
+)}
+
+      <div id="map" style={{ height: "500px", width: "100%" }}></div>
+    </>
+  );
 }
