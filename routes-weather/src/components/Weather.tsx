@@ -6,14 +6,22 @@ interface Weather {
   temp: number;
 }
 
+interface WeatherDaily {
+  dt: number;
+  temp: {
+    day: number;
+  };
+}
+
+
 export function Weather() {
   const [weather, setWeather] = useState<null|Weather>(null);
-  const [dailyy, setDaily] = useState<Weather | null>(null);
+  const [dailyy, setDaily] = useState<WeatherDaily []>([]);
   const [cityName, setCityName] = useState("");
   const [error, setError] = useState("");
 
   const kelvinToCelsius = (kelvin: number) => {
-    return +(kelvin - 273.15).toFixed(2);
+    return +(kelvin - 273.15).toFixed(1);
   }
 
   const formatTimestamp = (timestamp: number): string => {
@@ -68,14 +76,11 @@ export function Weather() {
 <p>Temperatura: {kelvinToCelsius(weather.temp)} º C</p>
 
 <h2>Previsão por dia: </h2>
-
-<h2>
-
-        {dailyy.forEach((day) => {
-          <p>{`Data: ${day.dt}, Temperatura: ${day.temp}`}</p>
-        })}
-
-</h2>
+{dailyy.map((dayy, index) => (
+  <p key={index}>
+    {`Data: ${formatTimestamp(dayy.dt)} Temperatura: ${kelvinToCelsius(dayy.temp.day)} ºC`}
+  </p>
+))}
 
 
   </div>
