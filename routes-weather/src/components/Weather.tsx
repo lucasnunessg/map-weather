@@ -8,6 +8,7 @@ interface Weather {
 
 export function Weather() {
   const [weather, setWeather] = useState<null|Weather>(null);
+  const [dailyy, setDaily] = useState<Weather | null>(null);
   const [cityName, setCityName] = useState("");
   const [error, setError] = useState("");
 
@@ -34,7 +35,8 @@ export function Weather() {
         params: { cityName }
       });
       if (response.status === 200) {
-        console.log("response here: " + JSON.stringify(response.data, null, 2));
+        console.log("response here: " + JSON.stringify(response.data, null, 3));
+        setDaily(response.data.daily)
         setWeather({
           dt: response.data.current.dt,
           temp: response.data.current.temp
@@ -62,8 +64,20 @@ export function Weather() {
 
       {weather && (
   <div>
-<h2>Previsão para: {formatTimestamp(weather.dt)}</h2>
+<h2>Horário e data: {formatTimestamp(weather.dt)}</h2>
 <p>Temperatura: {kelvinToCelsius(weather.temp)} º C</p>
+
+<h2>Previsão por dia: </h2>
+
+<h2>
+
+        {dailyy.forEach((day) => {
+          <p>{`Data: ${day.dt}, Temperatura: ${day.temp}`}</p>
+        })}
+
+</h2>
+
+
   </div>
 )}
 
